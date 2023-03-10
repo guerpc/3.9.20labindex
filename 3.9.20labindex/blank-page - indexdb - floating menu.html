@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <title>SB Admin - Bootstrap Admin Template</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin.css" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Custom Fonts -->
+    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <script type="text/javascript">
+
+        window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+        //prefixes of window.IDB objects
+        window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+        window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+
+        if (!window.indexedDB) {
+            window.alert("Your browser doesn't support a stable version of IndexedDB.");
+        }
+
+        const studentData = [
+            { id: 1, first_name: 'Brok', last_name: 'Magill', phone: '304-669-1488', address: '47 Glacier Hill Place', city: 'Charleston', state: 'West Virginia', zip: '25313', comment: '', email: 'bmagill0@printfriendly.com', password: 'password123' },
+            { id: 2, first_name: 'Marlin', last_name: 'Waliszek', phone: '843-988-7142', address: '2357 MooseWay', city: 'Charleston', state: 'SouthCarolina', zip: '29424', comment: '', email: 'mwaliszek1@infoseek.co.jp', password: 'password123' },
+            { id: 3, first_name: 'Violetta', last_name: 'Benning', phone: '209-367-5899', address: '3630 Schurz Hill', city: 'Stockton', state: 'California', zip: '95210', comment: '', email: 'vbenning2@dell.com', password: 'password123' },
+            { id: 4, first_name: 'Rodolph', last_name: 'Dawley', phone: '520-980-3485', address: '75599 Paget Alley', city: 'Tucson', state: 'Arizona', zip: '85748', comment: '', email: 'rdawley3@1und1.de', password: 'password123' },
+            { id: 5, first_name: 'Sven', last_name: 'Worms', phone: '505-783-9717', address: '1Florence Court', city: 'Albuquerque', state: 'NewMexico', zip: '87190', comment: '', email: 'sworms4@stanford.edu', password: 'password123' },
+            { id: 6, first_name: 'Trueman', last_name: 'Bairstow', phone: '316-943-5538', address: '2 Barnett Point', city: 'Wichita', state: 'Kansas', zip: '67215', comment: '', email: 'tbairstow5@thetimes.co.uk', password: 'password123' },
+            { id: 7, first_name: 'Dirk', last_name: 'MacAnellye', phone: '309-102-0391', address: '590 Summit Circle', city: 'Peoria', state: 'Illinois', zip: '61629', comment: '', email: 'dmacanellye6@unesco.org', password: 'password123' },
+            { id: 8, first_name: 'Jobi', last_name: 'Matzen', phone: '806-730-8742', address: '12718 New Castle Parkway', city: 'Amarillo', state: 'Texas', zip: '79188', comment: '', email: 'jmatzen7@csmonitor.com', password: 'password123' },
+            { id: 9, first_name: 'Gabriello', last_name: 'Picford', phone: '423-590-3952', address: '2336 Ruskin Terrace', city: 'Kingsport', state: 'Tennessee', zip: '37665', comment: '', email: 'gpicford8@webeden.co.uk', password: 'password123' },
+            { id: 10, first_name: 'Meade', last_name: 'Gerasch', phone: '813-106-5231', address: '14191 Northport Plaza', city: 'Tampa', state: 'Florida', zip: '33647', comment: '', email: 'mgerasch9@howstuffworks.com', password: 'password123' }
+
+        ];
+        var db;
+        var request = window.indexedDB.open("studentsDatabase", 1);
+
+        request.onerror = function (event) {
+            console.log("error: ");
+        };
+
+        request.onsuccess = function (event) {
+            db = request.result;
+            console.log("success: " + db);
+        };
+
+        request.onupgradeneeded = function (event) {
+            var db = event.target.result;
+            //var objectStore = db.createObjectStore("student", { keyPath: "id" });
+            var objectStore = db.createObjectStore("student", { keyPath: "id", autoIncrement: true });
+
+            objectStore.createIndex('first_name', 'first_name', { unique: false });
+            objectStore.createIndex('email', 'email', { unique: true })
+
+            for (var i in studentData) {
+                objectStore.add(studentData[i]);
+            }
+            
+        }
+
+        function readData() {
+            var transaction = db.transaction(["student"]);
+            var objectStore = transaction.objectStore("student");
+            var request = objectStore.get(1);
+
+            request.onerror = function (event) {
+                alert("Unable to retrieve data from database!");
+            };
+
+            request.onsuccess = function (event) {
+                if (request.result) {
+                    //alert("First Name: " + request.result.first_name + ", Last Name: " + request.result.last_name);
+                    var dataString = "<table id='example' class='display' cellspacing='0' width='80%'>";
+                    dataString += '<thead><tr><th>' + 'ID' + '</th><th>' + 'First Name' + '</th><th>' + 'Last Name' + '</th></tr></thead>';
+                    dataString += "<tbody>";
+                    dataString += '<tr><td>' + request.result.id + '</td><td>' + request.result.first_name + '</td><td>' + request.result.last_name + '</td></tr>';
+                    dataString += "</tbody>";
+                    dataString += "</table>";
+                    $("#itemlist").html("");
+                    $("#itemlist").html(dataString);
+                    $(document).ready(function () {
+                        $('#example').DataTable({
+                            "paging": false,
+                            "ordering": false,
+                            "info": false
+                        });
+                        $('.dataTables_filter').css("display", "none");
+                        $('.dataTables_paginate ul').hide();
+                        $('.dataTables_paginate ul .prev').hide();
+                        $('.dataTables_paginate ul .next').hide();
+                    });
+                }
+
+                else {
+                    alert("Record was not found in database!");
+                }
+            };
+        }
+
+        function readAllData() {
+            $('#dataTable').children().remove();
+            var objectStore = db.transaction("student").objectStore("student");
+            var thead = "<thead><tr><th>ID</th><th>First Name</th><th>Last Name</th></tr></thead>";
+            var tbody = "<tbody></tbody>";
+
+            $('#dataTable').append(thead);
+            $('#dataTable').append(tbody);
+
+
+            objectStore.openCursor().onsuccess = function (event) {
+                var cursor = event.target.result;
+
+
+                if (cursor) {
+                    console.log("ID " + cursor.key + ", First Name: " + cursor.value.first_name + ", Last Name: " + cursor.value.last_name);
+                    var tableRow = document.createElement('tr');
+
+
+                    tableRow.innerHTML = '<td>' + cursor.key + '</td>'
+                        + '<td>' + cursor.value.first_name + '</td>'
+                        + '<td>' + cursor.value.last_name + '</td>'
+                    $('#dataTable').append(tableRow);
+
+                    cursor.continue();
+                }
+                else {
+                    $(document).ready(function () {
+
+                        $('#dataTable').DataTable();
+                    });
+                    console.log("No more records!");
+                }
+            };
+        }
+
+        function addData() {
+            var request = db.transaction(["student"], "readwrite")
+                .objectStore("student")
+                .add({ id: 11,  first_name: 'john', last_name: 'GeJohnrasch', phone: '813-106-5231', address: '14191 Northport Plaza', city: 'Tampa', state: 'Florida', zip: '33647', comment: '', email: 'john@howstuffworks.com', password: 'password123' }); 
+
+            request.onsuccess = function (event) {
+                alert("New Record has been added to your database.");
+            };
+
+            request.onerror = function (event) {
+                alert("Unable to add data\r\nRecord is already exist in database! ");
+            }
+            readAllData();
+        }
+
+
+        function removeData() {
+            var request = db.transaction(["student"], "readwrite")
+                .objectStore("student")
+                .delete(2);
+
+            request.onsuccess = function (event) {
+                alert("Record has been deleted from your database.");
+            };
+            readAllData();
+        }
+
+
+
+        //Update data
+        //The IDBObject.put() method is used to update data.		
+
+        function update() {
+            var request = db.transaction(['student'], 'readwrite')
+                .objectStore('student')
+                .put({ id: 1, first_name: 'James', last_name: 'Magill', phone: '304-669-1488', address: '47 Glacier Hill Place', city: 'Charleston', state: 'West Virginia', zip: '25313', comment: '', email: 'bmagill0@printfriendly.com', password: 'password123' });
+
+            request.onsuccess = function (event) {
+                console.log('The data has been updated successfully');
+            };
+
+            request.onerror = function (event) {
+                console.log('The data has been updated failed');
+            }
+            readData()
+        }
+
+        //Now, you can find the corresponding data record from the name.
+        function searchByName() {
+            var transaction = db.transaction(['student'], 'readonly');
+            var store = transaction.objectStore('student');
+            var index = store.index('first_name');
+            var request = index.get('Trueman');
+
+            //request.onsuccess = function (e) {
+            //    var result = e.target.result;
+            //    if (result) {
+            //        console.log("Email: " + result.email);
+            //    } else {
+            //        console.log("Jim was not found in the database");
+            //    }
+            //}
+
+
+            request.onsuccess = function (event) {
+                if (request.result) {
+                    //alert("First Name: " + request.result.first_name + ", Last Name: " + request.result.last_name);
+                    var dataString = "<table id='example' class='display' cellspacing='0' width='80%'>";
+                    dataString += '<thead><tr><th>' + 'ID' + '</th><th>' + 'First Name' + '</th><th>' + 'Last Name' + '</th></tr></thead>';
+                    dataString += "<tbody>";
+                    dataString += '<tr><td>' + request.result.id + '</td><td>' + request.result.first_name + '</td><td>' + request.result.last_name + '</td></tr>';
+                    dataString += "</tbody>";
+                    dataString += "</table>";
+                    $("#itemlist").html("");
+                    $("#itemlist").html(dataString);
+                    $(document).ready(function () {
+                        $('#example').DataTable({
+                            "paging": false,
+                            "ordering": false,
+                            "info": false
+                        });
+                        $('.dataTables_filter').css("display", "none");
+                        $('.dataTables_paginate ul').hide();
+                        $('.dataTables_paginate ul .prev').hide();
+                        $('.dataTables_paginate ul .next').hide();
+                    });
+                }
+
+                else {
+                    alert("Record was not found in database!");
+                }
+            };}
+        function searchByEmail() {
+            var transaction = db.transaction(['student'], 'readonly');
+            var store = transaction.objectStore('student');
+            var index = store.index('email');
+            var request = index.get('mgerasch9@howstuffworks.com');
+
+            //request.onsuccess = function (e) {
+            //    var result = e.target.result;
+            //    if (result) {
+            //        console.log("Email: " + result.email);
+            //    } else {
+            //        console.log("Jim was not found in the database");
+            //    }
+            //}
+
+
+            request.onsuccess = function (event) {
+                if (request.result) {
+                    //alert("First Name: " + request.result.first_name + ", Last Name: " + request.result.last_name);
+                    var dataString = "<table id='example' class='display' cellspacing='0' width='80%'>";
+                    dataString += '<thead><tr><th>' + 'ID' + '</th><th>' + 'Email' + '</th><th>' + 'First Name' + '</th><th>' + 'Last Name' + '</th></tr></thead>';
+                    dataString += "<tbody>";
+                    dataString += '<tr><td>' + request.result.id + '</td><td>' + request.result.email + '</td><td>' + request.result.first_name + '</td><td>' + request.result.last_name + '</td></tr>';
+                    dataString += "</tbody>";
+                    dataString += "</table>";
+                    $("#itemlist").html("");
+                    $("#itemlist").html(dataString);
+                    $(document).ready(function () {
+                        $('#example').DataTable({
+                            "paging": false,
+                            "ordering": false,
+                            "info": false
+                        });
+                        $('.dataTables_filter').css("display", "none");
+                        $('.dataTables_paginate ul').hide();
+                        $('.dataTables_paginate ul .prev').hide();
+                        $('.dataTables_paginate ul .next').hide();
+                    });
+                }
+
+                else {
+                    alert("Record was not found in database!");
+                }
+            };
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">SB Admin</a>
+            </div>
+			
+			
+            <!-- Top Menu Items -->
+            <ul class="nav navbar-right top-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
+                    <ul class="dropdown-menu message-dropdown">
+                        <li class="message-preview">
+                            <a href="#">
+                                <div class="media">
+                                    <span class="pull-left">
+                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
+                                    </span>
+                                    <div class="media-body">
+                                        <h5 class="media-heading">
+                                            <strong>John Smith</strong>
+                                        </h5>
+                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <div class="media">
+                                    <span class="pull-left">
+                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
+                                    </span>
+                                    <div class="media-body">
+                                        <h5 class="media-heading">
+                                            <strong>John Smith</strong>
+                                        </h5>
+                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <div class="media">
+                                    <span class="pull-left">
+                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
+                                    </span>
+                                    <div class="media-body">
+                                        <h5 class="media-heading">
+                                            <strong>John Smith</strong>
+                                        </h5>
+                                        <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+                                        <p>Lorem ipsum dolor sit amet, consectetur...</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="message-footer">
+                            <a href="#">Read All New Messages</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
+                    <ul class="dropdown-menu alert-dropdown">
+                        <li>
+                            <a href="#">Alert Name <span class="label label-default">Alert Badge</span></a>
+                        </li>
+                        <li>
+                            <a href="#">Alert Name <span class="label label-primary">Alert Badge</span></a>
+                        </li>
+                        <li>
+                            <a href="#">Alert Name <span class="label label-success">Alert Badge</span></a>
+                        </li>
+                        <li>
+                            <a href="#">Alert Name <span class="label label-info">Alert Badge</span></a>
+                        </li>
+                        <li>
+                            <a href="#">Alert Name <span class="label label-warning">Alert Badge</span></a>
+                        </li>
+                        <li>
+                            <a href="#">Alert Name <span class="label label-danger">Alert Badge</span></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">View All</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+			
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li>
+                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
+                    </li>
+                    <li>
+                        <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
+                    </li>
+                    <li>
+                        <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
+                    </li>
+                    <li>
+                        <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
+                    </li>
+                    <li>
+                        <a href="bootstrap-grid.html"><i class="fa fa-fw fa-wrench"></i> Bootstrap Grid</a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="demo" class="collapse">
+                            <li>
+                                <a href="#">Dropdown Item</a>
+                            </li>
+                            <li>
+                                <a href="#">Dropdown Item</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="active">
+                        <a href="blank-page.html"><i class="fa fa-fw fa-file"></i> Blank Page</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            Blank Page
+                            <small>Subheading</small>
+                        </h1>
+                        <ol class="breadcrumb">
+                            <li>
+                                <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
+                            </li>
+                            <li class="active">
+                                <i class="fa fa-file"></i> Blank Page
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+            </div>
+            <!-- /.container-fluid -->
+    <button onclick="readData()">Read </button>
+    <button onclick="readAllData()">Read All</button>
+    <button onclick="addData()">Add Data</button>
+    <button onclick="removeData()">Delete </button>
+    <button onclick="update()">Update </button>
+    <button onclick="searchByName()">Search By Name </button>
+    <button onclick="searchByEmail()">Search By Email </button>
+
+    <div id="itemlist" stylt="">
+        <table id="dataTable" class='display'></table>
+    </div>
+	
+        </div>
+        <!-- /#page-wrapper -->
+		
+<style type="text/css">
+
+*{padding:0;margin:0;}
+
+.label-container{
+	position:fixed;
+	bottom:48px;
+	right:105px;
+	display:table;
+	visibility: hidden;
+}
+
+.label-text{
+	color:#FFF;
+	background:rgba(51,51,51,0.5);
+	display:table-cell;
+	vertical-align:middle;
+	padding:10px;
+	border-radius:3px;
+}
+
+.label-arrow{
+	display:table-cell;
+	vertical-align:middle;
+	color:#333;
+	opacity:0.5;
+}
+
+.float{
+	position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+	right:40px;
+	background-color:#F33;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+	z-index:1000;
+	animation: bot-to-top 2s ease-out;
+}
+
+ul.float_menu{
+	position:fixed;
+	right:40px;
+	padding-bottom:20px;
+	bottom:80px;
+	z-index:100;
+}
+
+ul.float_menu li{
+	list-style:none;
+	margin-bottom:10px;
+}
+
+ul.float_menu li a{
+	background-color:#F33;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+	width:60px;
+	height:60px;
+	display:block;
+}
+
+ul.float_menu:hover{
+	visibility:visible!important;
+	opacity:1!important;
+}
+
+
+.my-float{
+	font-size:24px;
+	margin-top:18px;
+}
+
+a#menu-share + ul{
+  visibility: hidden;
+}
+
+a#menu-share:hover + ul{
+  visibility: visible;
+  animation: scale-in 0.5s;
+}
+
+a#menu-share i{
+	animation: rotate-in 0.5s;
+}
+
+a#menu-share:hover > i{
+	animation: rotate-out 0.5s;
+}
+
+@keyframes bot-to-top {
+    0%   {bottom:-40px}
+    50%  {bottom:40px}
+}
+
+@keyframes scale-in {
+    from {transform: scale(0);opacity: 0;}
+    to {transform: scale(1);opacity: 1;}
+}
+
+@keyframes rotate-in {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+
+@keyframes rotate-out {
+    from {transform: rotate(360deg);}
+    to {transform: rotate(0deg);}
+}}
+
+</style>		
+<div id="wrapper"> 		
+<a href="#" class="float" id="menu-share">
+<i class="fa fa-share my-float"></i>
+</a>
+<ul class="float_menu">
+<li><a href="#" id="menu-facebook">
+<i class="fa fa-facebook my-float"></i>
+</a></li>
+<li><a href="#" id="menu-google-plus">
+<i class="fa fa-google-plus my-float"></i>
+</a></li>
+<li><a href="#" id="menu-twitter">
+<i class="fa fa-twitter my-float"></i>
+</a></li>
+</ul>		
+</div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

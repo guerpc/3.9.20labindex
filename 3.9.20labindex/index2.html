@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <script type="text/javascript">
+
+        window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+        //prefixes of window.IDB objects
+        window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+        window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+
+        if (!window.indexedDB) {
+            window.alert("Your browser doesn't support a stable version of IndexedDB.");
+        }
+
+        const studentData = [
+            { id: 1, first_name: 'Brok', last_name: 'Magill', phone: '304-669-1488', address: '47 Glacier Hill Place', city: 'Charleston', state: 'West Virginia', zip: '25313', comment: '', email: 'bmagill0@printfriendly.com', password: 'password123' },
+            { id: 2, first_name: 'Marlin', last_name: 'Waliszek', phone: '843-988-7142', address: '2357 MooseWay', city: 'Charleston', state: 'SouthCarolina', zip: '29424', comment: '', email: 'mwaliszek1@infoseek.co.jp', password: 'password123' },
+            { id: 3, first_name: 'Violetta', last_name: 'Benning', phone: '209-367-5899', address: '3630 Schurz Hill', city: 'Stockton', state: 'California', zip: '95210', comment: '', email: 'vbenning2@dell.com', password: 'password123' },
+            { id: 4, first_name: 'Rodolph', last_name: 'Dawley', phone: '520-980-3485', address: '75599 Paget Alley', city: 'Tucson', state: 'Arizona', zip: '85748', comment: '', email: 'rdawley3@1und1.de', password: 'password123' },
+            { id: 5, first_name: 'Sven', last_name: 'Worms', phone: '505-783-9717', address: '1Florence Court', city: 'Albuquerque', state: 'NewMexico', zip: '87190', comment: '', email: 'sworms4@stanford.edu', password: 'password123' },
+            { id: 6, first_name: 'Trueman', last_name: 'Bairstow', phone: '316-943-5538', address: '2 Barnett Point', city: 'Wichita', state: 'Kansas', zip: '67215', comment: '', email: 'tbairstow5@thetimes.co.uk', password: 'password123' },
+            { id: 7, first_name: 'Dirk', last_name: 'MacAnellye', phone: '309-102-0391', address: '590 Summit Circle', city: 'Peoria', state: 'Illinois', zip: '61629', comment: '', email: 'dmacanellye6@unesco.org', password: 'password123' },
+            { id: 8, first_name: 'Jobi', last_name: 'Matzen', phone: '806-730-8742', address: '12718 New Castle Parkway', city: 'Amarillo', state: 'Texas', zip: '79188', comment: '', email: 'jmatzen7@csmonitor.com', password: 'password123' },
+            { id: 9, first_name: 'Gabriello', last_name: 'Picford', phone: '423-590-3952', address: '2336 Ruskin Terrace', city: 'Kingsport', state: 'Tennessee', zip: '37665', comment: '', email: 'gpicford8@webeden.co.uk', password: 'password123' },
+            { id: 10, first_name: 'Meade', last_name: 'Gerasch', phone: '813-106-5231', address: '14191 Northport Plaza', city: 'Tampa', state: 'Florida', zip: '33647', comment: '', email: 'mgerasch9@howstuffworks.com', password: 'password123' }
+
+        ];
+        var db;
+        var request = window.indexedDB.open("studentsDatabase", 1);
+
+        request.onerror = function (event) {
+            console.log("error: ");
+        };
+
+        request.onsuccess = function (event) {
+            db = request.result;
+            console.log("success: " + db);
+        };
+
+        request.onupgradeneeded = function (event) {
+            var db = event.target.result;
+            //var objectStore = db.createObjectStore("student", { keyPath: "id" });
+            var objectStore = db.createObjectStore("student", { keyPath: "id", autoIncrement: true });
+
+            objectStore.createIndex('first_name', 'first_name', { unique: false });
+            objectStore.createIndex('email', 'email', { unique: true })
+
+            for (var i in studentData) {
+                objectStore.add(studentData[i]);
+            }
+            
+        }
+
+        function readData() {
+            var transaction = db.transaction(["student"]);
+            var objectStore = transaction.objectStore("student");
+            var request = objectStore.get(1);
+
+            request.onerror = function (event) {
+                alert("Unable to retrieve data from database!");
+            };
+
+            request.onsuccess = function (event) {
+                if (request.result) {
+                    //alert("First Name: " + request.result.first_name + ", Last Name: " + request.result.last_name);
+                    var dataString = "<table id='example' class='display' cellspacing='0' width='80%'>";
+                    dataString += '<thead><tr><th>' + 'ID' + '</th><th>' + 'First Name' + '</th><th>' + 'Last Name' + '</th></tr></thead>';
+                    dataString += "<tbody>";
+                    dataString += '<tr><td>' + request.result.id + '</td><td>' + request.result.first_name + '</td><td>' + request.result.last_name + '</td></tr>';
+                    dataString += "</tbody>";
+                    dataString += "</table>";
+                    $("#itemlist").html("");
+                    $("#itemlist").html(dataString);
+                    $(document).ready(function () {
+                        $('#example').DataTable({
+                            "paging": false,
+                            "ordering": false,
+                            "info": false
+                        });
+                        $('.dataTables_filter').css("display", "none");
+                        $('.dataTables_paginate ul').hide();
+                        $('.dataTables_paginate ul .prev').hide();
+                        $('.dataTables_paginate ul .next').hide();
+                    });
+                }
+
+                else {
+                    alert("Record was not found in database!");
+                }
+            };
+        }
+
+        function readAllData() {
+            $('#dataTable').children().remove();
+            var objectStore = db.transaction("student").objectStore("student");
+            var thead = "<thead><tr><th>ID</th><th>First Name</th><th>Last Name</th></tr></thead>";
+            var tbody = "<tbody></tbody>";
+
+            $('#dataTable').append(thead);
+            $('#dataTable').append(tbody);
+
+
+            objectStore.openCursor().onsuccess = function (event) {
+                var cursor = event.target.result;
+
+
+                if (cursor) {
+                    console.log("ID " + cursor.key + ", First Name: " + cursor.value.first_name + ", Last Name: " + cursor.value.last_name);
+                    var tableRow = document.createElement('tr');
+
+
+                    tableRow.innerHTML = '<td>' + cursor.key + '</td>'
+                        + '<td>' + cursor.value.first_name + '</td>'
+                        + '<td>' + cursor.value.last_name + '</td>'
+                    $('#dataTable').append(tableRow);
+
+                    cursor.continue();
+                }
+                else {
+                    $(document).ready(function () {
+
+                        $('#dataTable').DataTable();
+                    });
+                    console.log("No more records!");
+                }
+            };
+        }
+
+        function addData() {
+            var request = db.transaction(["student"], "readwrite")
+                .objectStore("student")
+                .add({ id: 11,  first_name: 'john', last_name: 'GeJohnrasch', phone: '813-106-5231', address: '14191 Northport Plaza', city: 'Tampa', state: 'Florida', zip: '33647', comment: '', email: 'john@howstuffworks.com', password: 'password123' }); 
+
+            request.onsuccess = function (event) {
+                alert("New Record has been added to your database.");
+            };
+
+            request.onerror = function (event) {
+                alert("Unable to add data\r\nRecord is already exist in database! ");
+            }
+            readAllData();
+        }
+
+
+        function removeData() {
+            var request = db.transaction(["student"], "readwrite")
+                .objectStore("student")
+                .delete(2);
+
+            request.onsuccess = function (event) {
+                alert("Record has been deleted from your database.");
+            };
+            readAllData();
+        }
+
+
+
+        //Update data
+        //The IDBObject.put() method is used to update data.		
+
+        function update() {
+            var request = db.transaction(['student'], 'readwrite')
+                .objectStore('student')
+                .put({ id: 1, first_name: 'James', last_name: 'Magill', phone: '304-669-1488', address: '47 Glacier Hill Place', city: 'Charleston', state: 'West Virginia', zip: '25313', comment: '', email: 'bmagill0@printfriendly.com', password: 'password123' });
+
+            request.onsuccess = function (event) {
+                console.log('The data has been updated successfully');
+            };
+
+            request.onerror = function (event) {
+                console.log('The data has been updated failed');
+            }
+            readData()
+        }
+
+        //Now, you can find the corresponding data record from the name.
+        function searchByName() {
+            var transaction = db.transaction(['student'], 'readonly');
+            var store = transaction.objectStore('student');
+            var index = store.index('first_name');
+            var request = index.get('Trueman');
+
+            //request.onsuccess = function (e) {
+            //    var result = e.target.result;
+            //    if (result) {
+            //        console.log("Email: " + result.email);
+            //    } else {
+            //        console.log("Jim was not found in the database");
+            //    }
+            //}
+
+
+            request.onsuccess = function (event) {
+                if (request.result) {
+                    //alert("First Name: " + request.result.first_name + ", Last Name: " + request.result.last_name);
+                    var dataString = "<table id='example' class='display' cellspacing='0' width='80%'>";
+                    dataString += '<thead><tr><th>' + 'ID' + '</th><th>' + 'First Name' + '</th><th>' + 'Last Name' + '</th></tr></thead>';
+                    dataString += "<tbody>";
+                    dataString += '<tr><td>' + request.result.id + '</td><td>' + request.result.first_name + '</td><td>' + request.result.last_name + '</td></tr>';
+                    dataString += "</tbody>";
+                    dataString += "</table>";
+                    $("#itemlist").html("");
+                    $("#itemlist").html(dataString);
+                    $(document).ready(function () {
+                        $('#example').DataTable({
+                            "paging": false,
+                            "ordering": false,
+                            "info": false
+                        });
+                        $('.dataTables_filter').css("display", "none");
+                        $('.dataTables_paginate ul').hide();
+                        $('.dataTables_paginate ul .prev').hide();
+                        $('.dataTables_paginate ul .next').hide();
+                    });
+                }
+
+                else {
+                    alert("Record was not found in database!");
+                }
+            };}
+        function searchByEmail() {
+            var transaction = db.transaction(['student'], 'readonly');
+            var store = transaction.objectStore('student');
+            var index = store.index('email');
+            var request = index.get('mgerasch9@howstuffworks.com');
+
+            //request.onsuccess = function (e) {
+            //    var result = e.target.result;
+            //    if (result) {
+            //        console.log("Email: " + result.email);
+            //    } else {
+            //        console.log("Jim was not found in the database");
+            //    }
+            //}
+
+
+            request.onsuccess = function (event) {
+                if (request.result) {
+                    //alert("First Name: " + request.result.first_name + ", Last Name: " + request.result.last_name);
+                    var dataString = "<table id='example' class='display' cellspacing='0' width='80%'>";
+                    dataString += '<thead><tr><th>' + 'ID' + '</th><th>' + 'Email' + '</th><th>' + 'First Name' + '</th><th>' + 'Last Name' + '</th></tr></thead>';
+                    dataString += "<tbody>";
+                    dataString += '<tr><td>' + request.result.id + '</td><td>' + request.result.email + '</td><td>' + request.result.first_name + '</td><td>' + request.result.last_name + '</td></tr>';
+                    dataString += "</tbody>";
+                    dataString += "</table>";
+                    $("#itemlist").html("");
+                    $("#itemlist").html(dataString);
+                    $(document).ready(function () {
+                        $('#example').DataTable({
+                            "paging": false,
+                            "ordering": false,
+                            "info": false
+                        });
+                        $('.dataTables_filter').css("display", "none");
+                        $('.dataTables_paginate ul').hide();
+                        $('.dataTables_paginate ul .prev').hide();
+                        $('.dataTables_paginate ul .next').hide();
+                    });
+                }
+
+                else {
+                    alert("Record was not found in database!");
+                }
+            };
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <button onclick="readData()">Read </button>
+    <button onclick="readAllData()">Read All</button>
+    <button onclick="addData()">Add Data</button>
+    <button onclick="removeData()">Delete </button>
+    <button onclick="update()">Update </button>
+    <button onclick="searchByName()">Search By Name </button>
+    <button onclick="searchByEmail()">Search By Email </button>
+
+    <div id="itemlist" stylt="">
+        <table id="dataTable" class='display'></table>
+    </div>
+</body>
+</html>
